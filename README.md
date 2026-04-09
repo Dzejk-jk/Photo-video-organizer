@@ -1,15 +1,53 @@
-# Photo-video-organizer
+# Media Organizer
 
-## Requirements
-The application requires the **metadata-extractor** library to be installed.  
-**metadata-extractor** is a Java library for reading metadata from media files.  
-Installation instructions can be found [here](https://github.com/drewnoakes/metadata-extractor).
+Desktopová aplikace pro automatické třídění fotek a videí do složek podle data pořízení.
 
-## What the Project Does
-The **Photo-video-organizer** application is designed to organize photos and videos. It scans each photo and video to retrieve its creation date and then automatically creates a folder with the date in the format `year-month`. The photo or video is then placed into the corresponding folder.
+## Co aplikace dělá
 
-If a photo or video does not have a creation date, it can be manually moved into a folder, or a new folder can be created for it.
+**Media Organizer** projde vybranou složku, přečte metadata každého souboru a automaticky ho přesune do podsložky ve formátu `rok-měsíc` (např. `2024-07`).
 
-## Why the Project is Useful
-This project is useful for organizing your photo and video collections, making it easier to manage and locate media based on their creation dates.
+- **Fotky** — datum se čte z EXIF metadat (tag `DateOriginal`)
+- **Videa** — datum se čte z MP4 metadat (tag `Creation Time`); podporované formáty: mp4, avi, mkv, mov, wmv, flv, webm
+- Soubory bez čitelného datumu zůstanou v původní složce a aplikace zobrazí jejich počet
+- Kolize názvů souborů se řeší automatickým přidáním číselné přípony, např. `IMG_001(1).jpg`
 
+### Funkce
+
+| Tlačítko | Popis |
+|---|---|
+| **Vybrat** | Otevře dialog pro výběr složky s médii |
+| **Organizovat média** | Roztřídí fotky a videa do podsložek `rok-měsíc` |
+| **Přemístit do jedné složky** | Přesune všechny soubory z podsložek do kořenové složky a odstraní prázdné podsložky |
+
+Obě operace běží na pozadí — GUI se při zpracování nezasekne ani u velkých kolekcí.
+
+## Požadavky
+
+- **Java 17** nebo novější
+- **Maven** (pro sestavení projektu)
+- Závislost **metadata-extractor** se stáhne automaticky přes Maven
+
+## Sestavení a spuštění
+
+```bash
+mvn compile
+mvn exec:java -Dexec.mainClass=App
+```
+
+nebo sestavit JAR:
+
+```bash
+mvn package
+java -jar target/Foto-organizer-maven-1.0-SNAPSHOT.jar
+```
+
+## Struktura projektu
+
+```
+src/main/java/
+├── App.java            # Vstupní bod aplikace
+├── OrganizerGUI.java   # Hlavní okno a UI logika
+├── MediaOrganizer.java # Čtení metadat a přesun souborů
+├── FileUtils.java      # Pomocné operace se souborovým systémem
+└── Action.java         # Výčet akcí tlačítek
+```
